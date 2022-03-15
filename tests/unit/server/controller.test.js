@@ -27,11 +27,16 @@ describe('#Controller - test for controller', () => {
             Service.prototype.getFileStream.name,
         ).mockResolvedValue({
             stream: mockFileStream,
+            type: '.html'
         })
         const controller = new Controller()
 
-        await controller.getFileStream(pages.homeHTML)
+        const controllerReturn = await controller.getFileStream(pages.homeHTML)
         expect(controller.service.getFileStream).toHaveBeenCalledWith(pages.homeHTML)
+        expect(controllerReturn).toStrictEqual({
+            stream: mockFileStream,
+            type: '.html'
+        })
     })
 
 })
