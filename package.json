@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node server/index.js",
     "live-reload": "nodemon server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "set NODE_OPTIONS=--experimental-vm-modules && npx jest --runInBand --no-cache",
+    "test:watch": "set LOG_DISABLED=true && set NODE_OPTIONS=--experimental-vm-modules && npx jest --runInBand --no-cache --watchAll",
+    "test:coverage": "set NODE_OPTIONS=--experimental-vm-modules && npx jest --runInBand --no-cache --coverage tests/unit"
   },
   "engines": {
     "node": "17"
@@ -24,6 +26,7 @@
   },
   "homepage": "https://github.com/GustavoSilvaFerreira/js-expert-spotify-radio#readme",
   "devDependencies": {
+    "jest": "^27.5.1",
     "nodemon": "^2.0.15"
   },
   "dependencies": {
