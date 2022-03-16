@@ -9,6 +9,10 @@ const {
 } = config
 
 export class Service {
+    constructor() {
+        this.clientStreams = new Map()
+    }
+
     createFileStream(filename) {
         return fs.createReadStream(filename)
     }
