@@ -7,16 +7,13 @@
   "scripts": {
     "start": "node server/index.js",
     "live-reload": "nodemon server/index.js",
-    
     "test:windows": "set LOG_DISABLED=true && set NODE_OPTIONS=--experimental-vm-modules --no-warnings && npx jest --runInBand --no-cache",
     "test:watchWin": "set LOG_DISABLED=true && set NODE_OPTIONS=--experimental-vm-modules --no-warnings && npx jest --runInBand --no-cache --watchAll",
     "test:coverageWin": "set LOG_DISABLED=true && set NODE_OPTIONS=--experimental-vm-modules --no-warnings && npx jest --runInBand --no-cache --coverage tests/unit",
-    
     "test": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest",
     "test:watch": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --no-cache --watchAll",
     "test:coverage": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --no-cache --coverage tests/unit",
-
-    "live-reload:docker": "docker-compose up live-reload"
+    "live-reload:docker": "docker-compose up --build live-reload"
   },
   "engines": {
     "node": "17"
@@ -38,6 +35,7 @@
   },
   "dependencies": {
     "pino": "^7.8.0",
-    "pino-pretty": "^7.5.3"
+    "pino-pretty": "^7.5.3",
+    "throttle": "^1.0.3"
   }
 }
