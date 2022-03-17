@@ -14,4 +14,4 @@ COPY . .
 
 USER node
 
-CMD [ "npm run live-reload" ]
+CMD npm run live-reload
