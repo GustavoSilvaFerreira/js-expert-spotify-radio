@@ -12,6 +12,7 @@
     "test:windows": "set LOG_DISABLED=true && set NODE_OPTIONS=--experimental-vm-modules --no-warnings && npx jest --runInBand --no-cache",
     "test:watch:windows": "set LOG_DISABLED=true && set NODE_OPTIONS=--experimental-vm-modules --no-warnings && npx jest --runInBand --no-cache --watchAll",
     "test:coverage:windows": "set LOG_DISABLED=true && set NODE_OPTIONS=--experimental-vm-modules --no-warnings && npx jest --runInBand --no-cache --coverage tests/unit",
+    "test:e2e:windows": "set LOG_DISABLED=true && set NODE_OPTIONS=--experimental-vm-modules --no-warnings && npx jest --runInBand --force-exit --detectOpenHandles --no-cache tests/e2e",
     
     "test": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --force-exit --detectOpenHandles --no-cache",
     "test:watch": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --no-cache --watchAll",
