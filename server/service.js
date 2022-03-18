@@ -50,31 +50,34 @@ export class Service {
         return childProcess.spawn('sox', args)
     }
 
-    async getBitRage(song) {
+    async getBitRate(song) {
         try {
             const args = [
-                '--i',
-                '-B',
+                '--i', // info
+                '-B', // bitrate
                 song
             ]
             const {
                 stderr, // tudo que é erro
                 stdout, // tudo que é log
-                stdin // enviar dados como stream
+                // stdin // enviar dados como stream
             } = this._executeSoxCommand(args)
+
             await Promise.all([
                 once(stderr, 'readable'),
-                once(stdout, 'readable')
+                once(stdout, 'readable'),
             ])
 
             const [
-                success,
+                success, 
                 error
             ] = [stdout, stderr].map(stream => stream.read())
+            if (error) return await Promise.reject(error)
+            return success
+                .toString()
+                .trim()
+                .replace(/k/, '000')
 
-            if(error) return await Promise.reject(error)
-
-            return success.toString().trim().replace(/k/, '000')
         } catch (error) {
             logger.error(`Deu ruim no bitRate: ${error}`)
             return fallbackBitRate
@@ -83,12 +86,12 @@ export class Service {
 
     broadCast() {
         return new Writable({
-            write: ( chunk, enc, cb) => {
-                for(const [id, stream] of this.clientStreams) {
-                    // se o cliente desconectou não devemos mais mandar dados para ele
-                    if(stream.WritableEnded) {
+            write: (chunk, enc, cb) => {
+                for (const [id, stream] of this.clientStreams) {
+                    // se o cliente descontou não devemos mais mandar dados pra ele
+                    if (stream.writableEnded) {
                         this.clientStreams.delete(id)
-                        continue
+                        continue;
                     }
 
                     stream.write(chunk)
@@ -101,7 +104,7 @@ export class Service {
 
     async startStreamming() {
         logger.info(`starting with ${this.currentSong}`)
-        const bitRate = this.currentBitRate = (await this.getBitRage(this.currentSong) / bitRateDivisor)
+        const bitRate = this.currentBitRate = (await this.getBitRate(this.currentSong)) / bitRateDivisor
         const throttleTransform = this.throttleTransform = new Throttle(bitRate)
         const songReadable = this.currentReadable = this.createFileStream(this.currentSong)
         return streamsPromises.pipeline(
@@ -123,7 +126,7 @@ export class Service {
         // file = home/index.html
         const fullFilePath = join(publicDirectory, file)
 
-        // valida se existe, se não existe estoura erro
+        // valida se existe, se não existe estoura erro!!
         await fsPromises.access(fullFilePath)
         const fileType = extname(fullFilePath)
         return {
@@ -137,7 +140,7 @@ export class Service {
             name,
             type
         } = await this.getFileInfo(file)
-
+        
         return {
             stream: this.createFileStream(name),
             type
