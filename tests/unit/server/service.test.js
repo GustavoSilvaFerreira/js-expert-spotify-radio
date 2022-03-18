@@ -10,12 +10,8 @@ import fs from 'fs'
 import fsPromises from 'fs/promises'
 import childProcess from 'child_process'
 
-import stream from 'stream'
+import { PassThrough, Writable } from 'stream'
 import streamsAsync from 'stream/promises'
-const {
-    PassThrough,
-    Writable,
-} = stream
 
 import Throttle from 'throttle'
 import {
@@ -171,66 +167,66 @@ describe('#Service - test suite for core processing', () => {
         expect(() => service.stopStreamming()).not.toThrow()
     })
 
-    //   test('#broadCast - it should write only for active client streams', () => {
-    //     const service = new Service()
-    //     const onData = jest.fn()
-    //     const client1 = TestUtil.generateWritableStream(onData)
-    //     const client2 = TestUtil.generateWritableStream(onData)
-    //     jest.spyOn(
-    //       service.clientStreams,
-    //       service.clientStreams.delete.name
-    //     )
+    test('#broadCast - it should write only for active client streams', () => {
+        const service = new Service()
+        const onData = jest.fn()
+        const client1 = TestUtil.generateWritableStream(onData)
+        const client2 = TestUtil.generateWritableStream(onData)
+        jest.spyOn(
+            service.clientStreams,
+            service.clientStreams.delete.name
+        )
 
-    //     service.clientStreams.set('1', client1)
-    //     service.clientStreams.set('2', client2)
-    //     client2.end()
+        service.clientStreams.set('1', client1)
+        service.clientStreams.set('2', client2)
+        client2.end()
 
-    //     const writable = service.broadCast()
-    //     // vai mandar somente para o client1 pq o outro desconectou
-    //     writable.write('Hello World')
+        const writable = service.broadCast()
+        // vai mandar somente para o client1 pq o outro desconectou
+        writable.write('Hello World')
 
-    //     expect(writable).toBeInstanceOf(Writable)
-    //     expect(service.clientStreams.delete).toHaveBeenCalled()
-    //     expect(onData).toHaveBeenCalledTimes(1)
-    //   })
+        expect(writable).toBeInstanceOf(Writable)
+        expect(service.clientStreams.delete).toHaveBeenCalled()
+        expect(onData).toHaveBeenCalledTimes(1)
+    })
 
-    //   test('#getBitRate - it should return the bitRate as string', async () => {
-    //     const song = 'mySong'
-    //     const service = new Service()
+      test('#getBitRate - it should return the bitRate as string', async () => {
+        const song = 'mySong'
+        const service = new Service()
 
-    //     const spawnResponse = getSpawnResponse({
-    //       stdout: '  1k  '
-    //     })
-    //     jest.spyOn(
-    //       service,
-    //       service._executeSoxCommand.name
-    //     ).mockReturnValue(spawnResponse)
+        const spawnResponse = getSpawnResponse({
+          stdout: '  1k  '
+        })
+        jest.spyOn(
+          service,
+          service._executeSoxCommand.name
+        ).mockReturnValue(spawnResponse)
 
-    //     const bitRatePromise = service.getBitRate(song)
+        const bitRatePromise = service.getBitRate(song)
 
-    //     const result = await bitRatePromise
-    //     expect(result).toStrictEqual('1000')
-    //     expect(service._executeSoxCommand).toHaveBeenCalledWith(['--i', '-B', song])
-    //   })
+        const result = await bitRatePromise
+        expect(result).toStrictEqual('1000')
+        expect(service._executeSoxCommand).toHaveBeenCalledWith(['--i', '-B', song])
+      })
 
-    //   test('#getBitRate - when an error ocurr it should get the fallbackBitRate', async () => {
-    //     const song = 'mySong'
-    //     const service = new Service()
+      test('#getBitRate - when an error ocurr it should get the fallbackBitRate', async () => {
+        const song = 'mySong'
+        const service = new Service()
 
-    //     const spawnResponse = getSpawnResponse({
-    //       stderr: 'error!'
-    //     })
-    //     jest.spyOn(
-    //       service,
-    //       service._executeSoxCommand.name
-    //     ).mockReturnValue(spawnResponse)
+        const spawnResponse = getSpawnResponse({
+          stderr: 'error!'
+        })
+        jest.spyOn(
+          service,
+          service._executeSoxCommand.name
+        ).mockReturnValue(spawnResponse)
 
-    //     const bitRatePromise = service.getBitRate(song)
+        const bitRatePromise = service.getBitRate(song)
 
-    //     const result = await bitRatePromise
-    //     expect(result).toStrictEqual(fallbackBitRate)
-    //     expect(service._executeSoxCommand).toHaveBeenCalledWith(['--i', '-B', song])
-    //   })
+        const result = await bitRatePromise
+        expect(result).toStrictEqual(fallbackBitRate)
+        expect(service._executeSoxCommand).toHaveBeenCalledWith(['--i', '-B', song])
+      })
 
     test('#_executeSoxCommand - it should call the sox command', async () => {
         const service = new Service()
@@ -248,48 +244,48 @@ describe('#Service - test suite for core processing', () => {
         expect(result).toStrictEqual(spawnResponse)
     })
 
-    //   test('#startStreamming - it should call the sox command', async () => {
-    //     const currentSong = 'mySong.mp3'
-    //     const service = new Service()
-    //     service.currentSong = currentSong
-    //     const currentReadable = TestUtil.generateReadableStream(['abc'])
-    //     const expectedResult = 'ok'
-    //     const writableBroadCaster = TestUtil.generateWritableStream(() => {})
+      test('#startStreamming - it should call the sox command', async () => {
+        const currentSong = 'mySong.mp3'
+        const service = new Service()
+        service.currentSong = currentSong
+        const currentReadable = TestUtil.generateReadableStream(['abc'])
+        const expectedResult = 'ok'
+        const writableBroadCaster = TestUtil.generateWritableStream(() => {})
 
-    //     jest.spyOn(
-    //       service,
-    //       service.getBitRate.name
-    //     ).mockResolvedValue(fallbackBitRate)
+        jest.spyOn(
+          service,
+          service.getBitRate.name
+        ).mockResolvedValue(fallbackBitRate)
 
-    //     jest.spyOn(
-    //       streamsAsync,
-    //       streamsAsync.pipeline.name
-    //     ).mockResolvedValue(expectedResult)
+        jest.spyOn(
+          streamsAsync,
+          streamsAsync.pipeline.name
+        ).mockResolvedValue(expectedResult)
 
-    //     jest.spyOn(
-    //       fs,
-    //       fs.createReadStream.name
-    //     ).mockReturnValue(currentReadable)
+        jest.spyOn(
+          fs,
+          fs.createReadStream.name
+        ).mockReturnValue(currentReadable)
 
-    //     jest.spyOn(
-    //       service,
-    //       service.broadCast.name
-    //     ).mockReturnValue(writableBroadCaster)
+        jest.spyOn(
+          service,
+          service.broadCast.name
+        ).mockReturnValue(writableBroadCaster)
 
-    //     const expectedThrottle = fallbackBitRate / bitRateDivisor
-    //     const result = await service.startStreamming()
+        const expectedThrottle = fallbackBitRate / bitRateDivisor
+        const result = await service.startStreamming()
 
-    //     expect(service.currentBitRate).toEqual(expectedThrottle)
-    //     expect(result).toEqual(expectedResult)
+        expect(service.currentBitRate).toEqual(expectedThrottle)
+        expect(result).toEqual(expectedResult)
 
-    //     expect(service.getBitRate).toHaveBeenCalledWith(currentSong)
-    //     expect(fs.createReadStream).toHaveBeenCalledWith(currentSong)
-    //     expect(streamsAsync.pipeline).toHaveBeenCalledWith(
-    //       currentReadable,
-    //       service.throttleTransform,
-    //       service.broadCast()
-    //     )
+        expect(service.getBitRate).toHaveBeenCalledWith(currentSong)
+        expect(fs.createReadStream).toHaveBeenCalledWith(currentSong)
+        expect(streamsAsync.pipeline).toHaveBeenCalledWith(
+          currentReadable,
+          service.throttleTransform,
+          service.broadCast()
+        )
 
-    //   })
+      })
 
 })
