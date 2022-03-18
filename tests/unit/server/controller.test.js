@@ -39,4 +39,93 @@ describe('#Controller - test for controller', () => {
         })
     })
 
+    describe('handleCommand', () => {
+        test('shold call startStreamming And return ok', async () => {
+            jest.spyOn(
+                Service.prototype,
+                Service.prototype.startStreamming.name,
+            ).mockResolvedValue()
+
+            const controller = new Controller()
+            const command = { command: 'start' }
+
+            const controllerReturn = await controller.handleCommand(command)
+
+            expect(Service.prototype.startStreamming).toHaveBeenCalled()
+            expect(controllerReturn).toStrictEqual({
+                result: 'ok'
+            })
+        })
+
+        test('shold call stopStreamming And return ok', async () => {
+            jest.spyOn(
+                Service.prototype,
+                Service.prototype.stopStreamming.name,
+            ).mockResolvedValue()
+
+            const controller = new Controller()
+            const command = { command: 'stop' }
+
+            const controllerReturn = await controller.handleCommand(command)
+
+            expect(Service.prototype.stopStreamming).toHaveBeenCalled()
+            expect(controllerReturn).toStrictEqual({
+                result: 'ok'
+            })
+        })
+
+        test('shold call handleCommand And not call stopStreamming and startStreamming and return ok', async () => {
+            jest.spyOn(
+                Service.prototype,
+                Service.prototype.startStreamming.name,
+            ).mockResolvedValue()
+            jest.spyOn(
+                Service.prototype,
+                Service.prototype.stopStreamming.name,
+            ).mockResolvedValue()
+
+            const controller = new Controller()
+            const command = { command: 'not' }
+
+            const controllerReturn = await controller.handleCommand(command)
+
+            expect(Service.prototype.startStreamming).not.toHaveBeenCalled()
+            expect(Service.prototype.stopStreamming).not.toHaveBeenCalled()
+            expect(controllerReturn).toStrictEqual({
+                result: 'ok'
+            })
+        })
+    })
+
+    describe('createClientStream', () => {
+        test('shold call startStreamming And return ok', async () => {
+            const mockStream = TestUtil.generateReadableStream(['test'])
+            jest.spyOn(
+                Service.prototype,
+                Service.prototype.createClientStream.name,
+            ).mockReturnValue({
+                id: '123456',
+                clientStream: mockStream
+            })
+            jest.spyOn(
+                Service.prototype,
+                Service.prototype.removeClientStream.name,
+            ).mockReturnValue(null)
+
+            const controller = new Controller()
+            const command = { command: 'start' }
+
+            const {
+                stream,
+                onClose
+            } = controller.createClientStream(command)
+
+            onClose()
+
+            expect(Service.prototype.createClientStream).toHaveBeenCalled()
+            expect(Service.prototype.removeClientStream).toHaveBeenCalledWith('123456')
+            expect(stream).toStrictEqual(mockStream)
+        })
+    })
+
 })

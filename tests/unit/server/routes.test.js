@@ -102,8 +102,8 @@ describe('#Routes - test site for api response', () => {
         expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response)
         expect(params.response.writeHead).toHaveBeenCalledWith(
             200, {
-                'Content-Type': CONTENT_TYPE[expectedType]
-            }
+            'Content-Type': CONTENT_TYPE[expectedType]
+        }
         )
     })
 
@@ -142,6 +142,64 @@ describe('#Routes - test site for api response', () => {
         expect(params.response.end).toHaveBeenCalled()
     })
 
+    test('GET /stream?id=123456 - should call createClientStream', async () => {
+        const params = TestUtil.defaultHandleParams()
+        params.request.method = 'GET'
+        params.request.url = '/stream'
+        const stream = TestUtil.generateReadableStream(['test'])
+        jest.spyOn(
+            stream,
+            "pipe"
+        ).mockReturnValue()
+
+        const onClose = jest.fn()
+        jest.spyOn(
+            Controller.prototype,
+            Controller.prototype.createClientStream.name
+        )
+        .mockReturnValue({
+            onClose,
+            stream
+        })
+
+        await handler(...params.values())
+        params.request.emit('close')
+
+        expect(params.response.writeHead).toHaveBeenCalledWith(
+            200, {
+            'Content-Type': 'audio/mpeg',
+            'Accept-Ranges': 'bytes',
+        })
+
+        expect(Controller.prototype.createClientStream).toHaveBeenCalled()
+        expect(stream.pipe).toHaveBeenCalledWith(params.response)
+        expect(onClose).toHaveBeenCalled()
+    })
+
+    test('POST /controller - should call handleCommand', async () => {
+        const params = TestUtil.defaultHandleParams()
+        params.request.method = 'POST'
+        params.request.url = '/controller'
+        const body = {
+            command: 'start'
+        }
+
+        params.request.push(JSON.stringify(body))
+        const jsonResult = {
+            ok: '1'
+        }
+        jest.spyOn(
+            Controller.prototype,
+            Controller.prototype.handleCommand.name
+        )
+        .mockResolvedValue(jsonResult)
+
+        await handler(...params.values())
+
+        expect(Controller.prototype.handleCommand).toHaveBeenCalledWith(body)
+        expect(params.response.end).toHaveBeenCalledWith((JSON.stringify(jsonResult)))
+    })
+
     describe('exceptions', () => {
         test('given inexistent file it should respond with 404', async () => {
             const params = TestUtil.defaultHandleParams()
@@ -152,7 +210,7 @@ describe('#Routes - test site for api response', () => {
                 Controller.prototype,
                 Controller.prototype.getFileStream.name,
             ).mockRejectedValue(new Error('Error: ENOENT: no such file or directy'))
-    
+
             await handler(...params.values())
             expect(params.response.writeHead).toHaveBeenCalledWith(404)
             expect(params.response.end).toHaveBeenCalled()
@@ -167,7 +225,7 @@ describe('#Routes - test site for api response', () => {
                 Controller.prototype,
                 Controller.prototype.getFileStream.name,
             ).mockRejectedValue(new Error('Error:'))
-    
+
             await handler(...params.values())
             expect(params.response.writeHead).toHaveBeenCalledWith(500)
             expect(params.response.end).toHaveBeenCalled()

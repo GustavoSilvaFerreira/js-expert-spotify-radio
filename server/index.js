@@ -1,6 +1,6 @@
-import server from './server.js'
+import config from "./config.js"
+import server from "./server.js"
 import { logger } from './util.js'
-import config from './config.js';
-
-server.listen(config.port)
-.on('listening', () => logger.info(`server running at ${config.port}!!!`))
+// fix: como agora é uma função mudei a chamada
+server().listen(config.port)
+    .on('listening', () => logger.info(`server running at ${config.port}!!`))
