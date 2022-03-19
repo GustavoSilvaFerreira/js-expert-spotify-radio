@@ -9,6 +9,7 @@ import {
 import fs from 'fs'
 import fsPromises from 'fs/promises'
 import childProcess from 'child_process'
+import { join } from 'path'
 
 import { PassThrough, Writable } from 'stream'
 import streamsAsync from 'stream/promises'
@@ -73,7 +74,7 @@ describe('#Service - test suite for core processing', () => {
         const result = await service.getFileInfo(currentSong)
         const expectedResult = {
             type: '.mp3',
-            name: `${publicDirectory}/${currentSong}`
+            name: join(publicDirectory, currentSong)
         }
 
         expect(result).toStrictEqual(expectedResult)
