@@ -10,3 +10,4 @@
 - Rodar o commando: ``` git remote -v ```
 - Rodar o commando: ``` heroku stack:set container ```
 - Rodar o commando: ``` git push heroku master ```
+- Rodar o commando: ``` heroku open ```
