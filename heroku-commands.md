@@ -1,5 +1,6 @@
 # Heroku Commands
 
+## Para deploy
 - Criar arquivo na raíz do projeto: heroku.yml
 - Rodar o comando:  ``` npm i -g heroku ```
 - Rodar o commando: ``` heroku login ```
@@ -11,3 +12,8 @@
 - Rodar o commando: ``` heroku stack:set container ```
 - Rodar o commando: ``` git push heroku master ```
 - Rodar o commando: ``` heroku open ```
+- Rodar o commando: ``` heroku logs -t -a spotify-radio-gsf ```
+
+## Para remover
+- Rodar o commando: ``` heroku apps:delete ```
+- Rodar o commando: ``` rm -rf .git ```
