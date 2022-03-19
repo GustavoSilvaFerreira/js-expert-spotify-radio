@@ -31,6 +31,8 @@ describe('#View - test suite for presentation layer', () => {
         jest.resetAllMocks()
         jest.clearAllMocks()
 
+        jest.spyOn(document, 'getElementById').mockReturnValue(makeBtnElement())
+
         // jest.spyOn(document, document.querySelectorAll.name).mockReturnValue([makeBtnElement()])
         // jest.spyOn(document, document.getElementById.name).mockReturnValue(makeBtnElement())
     })
